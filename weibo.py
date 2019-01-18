@@ -18,9 +18,11 @@ sys.setdefaultencoding('utf-8')
 #        user_id = (int)(sys.argv[1])
 #else:
 #        user_id = (int)(raw_input(u"please_input_id: "))
-user_id = YOUR_USER_ID
-cookie = {"Cookie": "#YOUR_COOKIE"}
-url = 'http://weibo.cn/u/%d?filter=1&page=1'%user_id
+user_id = 3153495602
+cookie = {"Cookie":
+"_T_WM=09c1bb484e7dc4a946b3e6033cffc6f5; SUB=_2A25xRZCDDeRhGeBJ71sT8CbLyjmIHXVSyTDLrDV6PUJbktBeLWL2kW1NRlHb4KJocnK1DpKkf3VdZEYp8skYS-jo; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9Wh1cFKdEM9Tv23P0rC--VVY5JpX5KzhUgL.FoqNSh.EehnNeK-2dJLoIp7LxKML1KBLBKnLxKqL1hnLBoMcS0B4eo5RS02f; SUHB=0pHh7eQuRBWmE9; SSOLoginState=1547821267; MLOGIN=1; XSRF-TOKEN=5b8186; WEIBOCN_FROM=1110006030; M_WEIBOCN_PARAMS=uicode%3D20000174"
+}
+url = 'https://weibo.cn/u/%d?filter=1&page=1'%user_id
 html = requests.get(url, cookies = cookie).content
 print u'user_id和cookie读入成功'
 selector = etree.HTML(html)
@@ -47,7 +49,7 @@ for step in range(times):
     for page in range(i, j):
         #获取lxml页面
         try:
-            url = 'http://weibo.cn/u/%d?filter=1&page=%d'%(user_id,page) 
+            url = 'https://weibo.cn/u/%d?filter=1&page=%d'%(user_id,page) 
             lxml = requests.get(url, cookies = cookie).content
             #文字爬取
             selector = etree.HTML(lxml)
@@ -63,8 +65,8 @@ for step in range(times):
             print page,'word ok'
             sys.stdout.flush()
             soup = BeautifulSoup(lxml, "lxml")
-            urllist = soup.find_all('a',href=re.compile(r'^http://weibo.cn/mblog/oripic',re.I))
-            urllist1 = soup.find_all('a',href=re.compile(r'^http://weibo.cn/mblog/picAll',re.I))
+            urllist = soup.find_all('a',href=re.compile(r'^https://weibo.cn/mblog/oripic',re.I))
+            urllist1 = soup.find_all('a',href=re.compile(r'^https://weibo.cn/mblog/picAll',re.I))
             for imgurl in urllist:
                 imgurl['href'] = re.sub(r"amp;", '', imgurl['href'])
         #       print imgurl['href']
@@ -75,7 +77,7 @@ for step in range(times):
                 soup = BeautifulSoup(html_content, "lxml")
                 urllist2 = soup.find_all('a',href=re.compile(r'^/mblog/oripic',re.I))
                 for imgurl in urllist2:
-                    imgurl['href'] = 'http://weibo.cn' + re.sub(r"amp;", '', imgurl['href'])
+                    imgurl['href'] = 'https://weibo.cn' + re.sub(r"amp;", '', imgurl['href'])
                     urllist_set.add(requests.get(imgurl['href'], cookies = cookie).url)
                     image_count +=1
                 image_count -= 1
@@ -84,9 +86,9 @@ for step in range(times):
             print page,'error'
         print page, 'sleep'
         sys.stdout.flush()
-        time.sleep(60)
+        time.sleep(1)
     print u'正在进行第', step + 1, u'次停顿，防止访问次数过多'
-    time.sleep(300)
+    time.sleep(5)
 
 try:
     fo = open(os.getcwd()+"/%d"%user_id, "wb")
